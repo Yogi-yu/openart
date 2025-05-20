@@ -29,7 +29,11 @@ export default function MarketplacePage() {
       <h1 className="text-2xl font-bold mb-6">🖼️ NFT Market</h1>
 
       {isLoading && <p>Loading listings...</p>}
-      {error && <p className="text-red-500">Error: {error.message}</p>}
+    {error instanceof Error && (
+  <p className="text-red-500">Error: {error.message}</p>
+)}
+
+
       {!isLoading && listings?.length === 0 && <p>No listings found.</p>}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
