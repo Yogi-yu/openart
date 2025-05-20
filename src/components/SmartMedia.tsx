@@ -22,6 +22,7 @@ export default function SmartMedia({ src }: { src?: string | null }) {
           src={url}
           alt="NFT media"
           fill
+          unoptimized
           className="object-cover object-center"
           sizes="(max-width: 768px) 100vw,
                  (max-width: 1200px) 50vw,
