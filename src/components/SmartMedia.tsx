@@ -11,6 +11,8 @@ export default function SmartMedia({ src }: { src?: string | null }) {
       </div>
     );
   }
+console.log("[SmartMedia] src in:", src);
+console.log("[SmartMedia] src resolved:", resolveIPFSUrl(src));
 
   const url = resolveIPFSUrl(src);
   const isImage = /\.(png|jpe?g|gif|svg|webp)$/i.test(url);
