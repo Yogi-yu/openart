@@ -2,28 +2,7 @@
 
 import Image from 'next/image';
 
-export function resolveIPFSUrl(url?: string | null): string {
-  if (!url) return '';
-
-  try {
-    // Handle ipfs:// links
-    if (url.startsWith('ipfs://')) {
-      return url.replace('ipfs://', 'https://nftstorage.link/ipfs/');
-    }
-
-    // Handle cf-ipfs.com
-    if (url.includes('cf-ipfs.com')) {
-      const urlObj = new URL(url);
-      const hash = urlObj.hostname.split('.')[0];
-      const path = urlObj.pathname.startsWith('/') ? urlObj.pathname.slice(1) : urlObj.pathname;
-      return `https://nftstorage.link/ipfs/${hash}/${path}`;
-    }
-
-    return url;
-  } catch (e) {
-    return '';
-  }
-}
+import { resolveIPFSUrl } from '@/utils/resolveIPFSUrl';
 
 
 

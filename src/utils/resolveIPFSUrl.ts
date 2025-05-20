@@ -2,26 +2,27 @@ export function resolveIPFSUrl(url?: string | null): string {
   if (!url) return '';
 
   try {
-    // Handle ipfs:// hash
+    // Convert ipfs://... to dweb.link
     if (url.startsWith('ipfs://')) {
-      return url.replace('ipfs://', 'https://nftstorage.link/ipfs/');
+      const hashPath = url.replace('ipfs://', '');
+      const [cid, ...rest] = hashPath.split('/');
+      return `https://${cid}.ipfs.dweb.link/${rest.join('/')}`;
     }
 
-    // Handle old-style *.cf-ipfs.com gateways
+    // Convert *.cf-ipfs.com to dweb.link
     if (url.includes('cf-ipfs.com')) {
       const urlObj = new URL(url);
-      const hash = urlObj.hostname.split('.')[0];
+      const cid = urlObj.hostname.split('.')[0];
       const path = urlObj.pathname.replace(/^\/+/, '');
-      return `https://nftstorage.link/ipfs/${hash}/${path}`;
+      return `https://${cid}.ipfs.dweb.link/${path}`;
     }
 
-    // Handle *.ipfs.dweb.link or other known IPFS gateways (optional)
-    const knownGateways = ['ipfs.dweb.link', 'ipfs.io', 'gateway.pinata.cloud'];
-    if (knownGateways.some(domain => url.includes(domain))) {
+    // Convert ipfs.io/gateway-style to dweb.link
+    if (url.includes('/ipfs/')) {
       const match = url.match(/\/ipfs\/([^/]+)\/?(.*)?/);
       if (match) {
-        const [, hash, path = ''] = match;
-        return `https://nftstorage.link/ipfs/${hash}/${path}`;
+        const [, cid, path = ''] = match;
+        return `https://${cid}.ipfs.dweb.link/${path}`;
       }
     }
 

@@ -29,6 +29,13 @@ export default function MarketplacePage() {
 
     if (!hasMounted) return null;
 
+    if (!contract || !hasMounted || isLoading) {
+  return (
+    <main className="min-h-screen bg-black flex items-center justify-center text-white">
+      <p>Loading the marketplace...</p>
+    </main>
+  );
+}
   if (isLoading) {
     return <div className="text-white p-6 text-sm">Loading listings...</div>;
   }
