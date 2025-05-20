@@ -1,33 +1,22 @@
-export function resolveIPFSUrl(url?: string | null): string {
-  if (!url) return '';
+export function resolveIPFSUrl(uri?: string | null): string {
+  if (!uri) return "";
 
-  try {
-    // Convert ipfs://... to dweb.link
-    if (url.startsWith('ipfs://')) {
-      const hashPath = url.replace('ipfs://', '');
-      const [cid, ...rest] = hashPath.split('/');
-      return `https://${cid}.ipfs.dweb.link/${rest.join('/')}`;
-    }
-
-    // Convert *.cf-ipfs.com to dweb.link
-    if (url.includes('cf-ipfs.com')) {
-      const urlObj = new URL(url);
-      const cid = urlObj.hostname.split('.')[0];
-      const path = urlObj.pathname.replace(/^\/+/, '');
-      return `https://${cid}.ipfs.dweb.link/${path}`;
-    }
-
-    // Convert ipfs.io/gateway-style to dweb.link
-    if (url.includes('/ipfs/')) {
-      const match = url.match(/\/ipfs\/([^/]+)\/?(.*)?/);
-      if (match) {
-        const [, cid, path = ''] = match;
-        return `https://${cid}.ipfs.dweb.link/${path}`;
-      }
-    }
-
-    return url;
-  } catch {
-    return '';
+  // Handle ipfs://Qm... format
+  if (uri.startsWith("ipfs://")) {
+    const parts = uri.replace("ipfs://", "").split("/");
+    const cid = parts[0];
+    const path = parts.slice(1).join("/");
+    return `https://${cid}.ipfs.dweb.link/${path}`;
   }
+
+  // Handle legacy .cf-ipfs.com gateway URLs
+  if (uri.includes(".cf-ipfs.com")) {
+    const url = new URL(uri);
+    const cid = url.hostname.split(".")[0];
+    const path = url.pathname.replace(/^\/+/, "");
+    return `https://${cid}.ipfs.dweb.link/${path}`;
+  }
+
+  // Already HTTP or custom gateway
+  return uri;
 }
