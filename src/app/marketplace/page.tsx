@@ -37,6 +37,8 @@ export default function MarketplacePage() {
 
   if (!ready) return <div className="text-white p-6 text-sm">Loading...</div>;
 
+
+
   return (
     <main className="p-6 text-white bg-black min-h-screen">
       <h1 className="text-2xl font-bold mb-6">🖼️ NFT Market</h1>
@@ -51,6 +53,8 @@ export default function MarketplacePage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {listings?.map((listing) => {
           console.log('[ListingCard] listing:', listing);
+          console.log("[ListingCard] listing.asset:", listing.asset);
+
           const asset = listing.asset;
           return (
             <div
@@ -58,7 +62,15 @@ export default function MarketplacePage() {
               className="flex flex-col border border-gray-700 rounded-md bg-zinc-900 p-2 shadow-sm"
             >
               <div className="w-full aspect-square overflow-hidden rounded bg-zinc-800 relative">
-                <SmartMedia src={asset.image ?? ''} />
+                {/* <SmartMedia src={asset.image ?? ''} /> */}
+
+                {listing.asset.image ? (
+  <SmartMedia src={listing.asset.image} />
+) : (
+  <div className="w-full h-full bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs">
+    No image available
+  </div>
+)}
               </div>
 
               <h2 className="text-base font-semibold mt-2 truncate">
