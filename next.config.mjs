@@ -9,6 +9,18 @@ const nextConfig = {
       'thirdweb.com',
      
     ],
+     remotePatterns: [
+    {
+      protocol: 'https',
+      hostname: '**.ipfs.dweb.link',
+    },
+
+      {
+        protocol: 'https',
+        hostname: '**.ipfscdn.io', // ✅ Allow any subdomain
+      },
+  ],
+    
   },
 
   // 🛠 Fixes for WalletConnect dependencies
