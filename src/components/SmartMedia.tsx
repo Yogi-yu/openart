@@ -2,25 +2,35 @@
 
 import Image from 'next/image';
 
-export function resolveImageURL(url?: string | null): string | null {
-  if (!url) return null;
+export function resolveIPFSUrl(url?: string | null): string {
+  if (!url) return '';
 
-  if (url.startsWith('ipfs://')) {
-    return url.replace('ipfs://', 'https://nftstorage.link/ipfs/');
+  try {
+    // Handle ipfs:// links
+    if (url.startsWith('ipfs://')) {
+      return url.replace('ipfs://', 'https://nftstorage.link/ipfs/');
+    }
+
+    // Handle cf-ipfs.com
+    if (url.includes('cf-ipfs.com')) {
+      const urlObj = new URL(url);
+      const hash = urlObj.hostname.split('.')[0];
+      const path = urlObj.pathname.startsWith('/') ? urlObj.pathname.slice(1) : urlObj.pathname;
+      return `https://nftstorage.link/ipfs/${hash}/${path}`;
+    }
+
+    return url;
+  } catch (e) {
+    return '';
   }
-
-  if (url.includes('cf-ipfs.com')) {
-    const urlObj = new URL(url);
-    const hash = urlObj.hostname.split('.')[0];
-    return `https://nftstorage.link/ipfs/${hash}`;
-  }
-
-  return url;
 }
 
 
+
+
+
 export default function SmartMedia({ src }: { src?: string }) {
-  const resolvedSrc = resolveImageURL(src);
+  const resolvedSrc = resolveIPFSUrl(src);
 
   if (!resolvedSrc) {
     return (

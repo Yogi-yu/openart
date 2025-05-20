@@ -7,6 +7,7 @@ import {
 import SmartMedia from '@/components/SmartMedia';
 import { useEffect, useState } from 'react';
 import { useHasMounted } from '@/hooks/useHasMounted';
+import { resolveIPFSUrl } from '@/utils/resolveIPFSUrl';
 
 
 export default function MarketplacePage() {
@@ -27,7 +28,7 @@ export default function MarketplacePage() {
   }
 
     if (!hasMounted) return null;
-    
+
   if (isLoading) {
     return <div className="text-white p-6 text-sm">Loading listings...</div>;
   }
@@ -51,7 +52,7 @@ export default function MarketplacePage() {
             className="flex flex-col border border-gray-700 rounded-md bg-zinc-900 p-2 shadow-sm"
           >
             <div className="w-full aspect-square overflow-hidden rounded">
-              <SmartMedia src={listing.asset.image ?? undefined} />
+              <SmartMedia src={resolveIPFSUrl(listing.asset.image) ?? undefined} />
 
             </div>
 
