@@ -1,6 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // fixes wallet connect dependency issue https://docs.walletconnect.com/web3modal/nextjs/about#extra-configuration
+  // ✅ Enable image optimization for external NFT image sources
+  images: {
+    domains: [
+      'ipfs.io',
+      'nftstorage.link',
+      'gateway.pinata.cloud',
+      'thirdweb.com',
+     
+    ],
+  },
+
+  // 🛠 Fixes for WalletConnect dependencies
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;

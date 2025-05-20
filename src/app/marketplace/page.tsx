@@ -43,7 +43,7 @@ export default function MarketplacePage() {
             className="flex flex-col border border-gray-700 rounded-md bg-zinc-900 p-2 shadow-sm"
           >
             <div className="w-full aspect-square overflow-hidden rounded">
-              <SmartMedia src={listing.asset.image} />
+              <SmartMedia src={listing.asset.image ?? undefined} />
             </div>
 
             <h2 className="text-base font-semibold mt-2 truncate">

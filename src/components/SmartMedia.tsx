@@ -1,45 +1,42 @@
 'use client';
 
-import React from 'react';
+import Image from 'next/image';
 
-export default function SmartMedia({ src }: { src: string }) {
-  if (!src) return null;
+export default function SmartMedia({ src }: { src?: string }) {
+  if (!src) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-zinc-400 text-xs">
+        No image
+      </div>
+    );
+  }
 
   const isImage = /\.(png|jpe?g|gif|svg|webp)$/i.test(src);
-  const isVideo = /\.(mp4|webm|ogg)$/i.test(src);
-  const isAudio = /\.(mp3|wav|ogg)$/i.test(src);
 
   if (isImage) {
     return (
-  <img
-    src={src}
-    alt="NFT"
-    className="w-full h-full object-cover object-center"
-  />);
-  }
-
-  if (isVideo) {
-    return (
-      <video controls className="rounded-lg mb-2 w-full">
-        <source src={src} />
-        Your browser does not support the video tag.
-      </video>
+      <div className="relative w-full h-full rounded overflow-hidden">
+        <Image
+          src={src}
+          alt="NFT media"
+          fill
+          className="object-cover object-center"
+          sizes="(max-width: 768px) 100vw,
+                 (max-width: 1200px) 50vw,
+                 33vw"
+        />
+      </div>
     );
   }
 
-  if (isAudio) {
-    return (
-      <audio controls className="rounded-lg mb-2 w-full">
-        <source src={src} />
-        Your browser does not support the audio element.
-      </audio>
-    );
-  }
-
-  // fallback
   return (
-    <a href={src} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-      Open Media
+    <a
+      href={src}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="w-full h-full flex items-center justify-center bg-zinc-800 text-blue-400 underline text-sm"
+    >
+      View media
     </a>
   );
 }
