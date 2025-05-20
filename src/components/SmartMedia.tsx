@@ -5,20 +5,19 @@ import Image from 'next/image';
 export function resolveImageURL(url?: string | null): string | null {
   if (!url) return null;
 
-  const cleanHash = url.replace('ipfs://', '').replace('https://', '');
-
   if (url.startsWith('ipfs://')) {
-    return `https://nftstorage.link/ipfs/${cleanHash}`;
+    return url.replace('ipfs://', 'https://nftstorage.link/ipfs/');
   }
 
-  if (url.includes('.ipfscdn.io')) {
+  if (url.includes('cf-ipfs.com')) {
     const urlObj = new URL(url);
-    const ipfsHash = urlObj.pathname.split('/ipfs/')[1];
-    return `https://nftstorage.link/ipfs/${ipfsHash}`;
+    const hash = urlObj.hostname.split('.')[0];
+    return `https://nftstorage.link/ipfs/${hash}`;
   }
 
   return url;
 }
+
 
 export default function SmartMedia({ src }: { src?: string }) {
   const resolvedSrc = resolveImageURL(src);
