@@ -1,8 +1,16 @@
 'use client';
 
-import { useContract, useDirectListings } from '@thirdweb-dev/react';
+import { useContract } from '@thirdweb-dev/react';
 import SmartMedia from '@/components/SmartMedia';
 import { useEffect, useState } from 'react';
+
+function resolveIPFSUrl(uri: string) {
+  if (!uri) return '';
+  if (uri.startsWith('ipfs://')) {
+    return uri.replace('ipfs://', 'https://ipfs.io/ipfs/');
+  }
+  return uri;
+}
 
 export default function MarketplacePage() {
   const [listings, setListings] = useState<any[]>([]);
@@ -24,31 +32,29 @@ export default function MarketplacePage() {
 
         const listingsWithMetadata = await Promise.all(
           allListings.map(async (listing) => {
-            let metadata = listing.asset;
-            const uri = listing.asset?.uri;
+            let metadata = {
+              name: 'Untitled',
+              description: '',
+              image: '',
+            };
 
             try {
-              if (uri && typeof uri === 'string') {
-                let metadataUrl = uri.replace('ipfs://', 'https://ipfs.dweb.link/ipfs/');
-                let res = await fetch(metadataUrl);
-                if (!res.ok) {
-                  metadataUrl = uri.replace('ipfs://', 'https://ipfs.io/ipfs/');
-                  res = await fetch(metadataUrl);
-                }
+              const tokenUri = listing.asset?.uri ?? '';
+              console.log('[Metadata Fetch] tokenUri:', tokenUri);
+              if (tokenUri.startsWith('ipfs://')) {
+                const metadataUrl = resolveIPFSUrl(tokenUri);
+                console.log('[Metadata Fetch] metadataUrl:', metadataUrl);
+                const res = await fetch(metadataUrl);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 metadata = await res.json();
-                console.log('[Metadata] final metadata:', metadata);
               }
             } catch (err) {
-              console.warn(`Failed to fetch metadata from ${uri}`, err);
+              console.warn(`Failed to fetch metadata for listing ${listing.id}`, err);
             }
 
             return {
               ...listing,
-              asset: {
-                ...listing.asset,
-                ...metadata,
-              },
+              asset: metadata,
             };
           })
         );
@@ -80,7 +86,7 @@ export default function MarketplacePage() {
             className="flex flex-col border border-gray-700 rounded-md bg-zinc-900 p-2 shadow-sm"
           >
             <div className="w-full aspect-square overflow-hidden rounded">
-              <SmartMedia src={listing.asset.image ?? undefined} />
+              <SmartMedia src={resolveIPFSUrl(listing.asset.image ?? '')} />
             </div>
 
             <h2 className="text-base font-semibold mt-2 truncate">
