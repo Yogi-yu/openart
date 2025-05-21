@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.76.1",
-    "@thirdweb-dev/react": "^4.6.12",
+    "@thirdweb-dev/react": "^4.9.4",
+    "@thirdweb-dev/sdk": "^4.0.99",
     "@walletconnect/utils": "^2.20.2",
     "ethers": "^5.8.0",
     "magic-sdk": "^9.1.0",
