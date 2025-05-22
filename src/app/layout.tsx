@@ -6,8 +6,6 @@ import { ThirdwebProvider } from "thirdweb/react";
  import { client } from "./client";
 import { ConnectButton } from "thirdweb/react";
 
-import WalletLogin from "@/components/WalletLogin";
-
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -38,7 +36,7 @@ export default function RootLayout({
       
       <main>{children}</main>
 
-      
+
        </ThirdwebProvider>
       </body>
     </html>
