@@ -6,8 +6,8 @@ import { resolveIPFSUrl } from '@/utils/resolveIPFSUrl';
 export default function SmartMedia({ src }: { src?: string | null }) {
   const resolvedSrc = resolveIPFSUrl(src ?? undefined);
 
-  console.log('[SmartMedia] src in:', src);
-  console.log('[SmartMedia] src resolved:', resolvedSrc);
+  // console.log('[SmartMedia] src in:', src);
+  // console.log('[SmartMedia] src resolved:', resolvedSrc);
 
   if (!resolvedSrc) {
     return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useMemo } from 'react';
 import { getContract } from 'thirdweb';
 import { getAllListings } from 'thirdweb/extensions/marketplace';
 import { bscTestnet } from 'thirdweb/chains';
@@ -10,7 +10,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { sendTransaction } from "thirdweb";
 import { useRef } from "react";
 
-
+import isEqual from "lodash/isEqual";
 import { fetchListingsWithOwners } from "@/lib/fetchListingsWithOwners";
 import { useConnectModal   } from "thirdweb/react";
 
@@ -34,7 +34,7 @@ function resolveIPFSUrl(uri: string) {
 
 export default function MarketplacePage() {
   const account = useActiveAccount();
-  const [listings, setListings] = useState<any[]>([]);
+const [allListings, setAllListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const { connect, isConnecting } = useConnectModal();
@@ -93,61 +93,51 @@ const handleBuyNow = async (listing: any) => {
   }
 };
 
-
-
+  // Load all listings once on mount
   useEffect(() => {
-    async function fetchListings() {
-    if (!account?.address) {
-        // setHasConnected(true);
-        setListings(await fetchListingsWithOwners(
-        MARKETPLACE_ADDRESS, 
-      ));
-        setLoading(false);
-        return;
-      }
-      //  if (!account?.address) return;
-
-      if (account.address === accountRef.current) return;
-       accountRef.current = account.address;
-
-      try {
-        setLoading(true);
-
-       const all = await fetchListingsWithOwners(
-        MARKETPLACE_ADDRESS, 
-      );  
-    
-       const visible = all.filter((l) => {
-        const owner = l.asset?.owner?.toLowerCase?.();
-        const user = account?.address?.toLowerCase?.();
-
-        // If either is undefined, we keep it visible
-        if (!owner || !user) return true;
-
-        return owner !== user;
-      });
-
-      // show the listings that are not owned by the user
-
-      console.log("🧼 All listings:", all);
-      console.log("🧼 Filtered listings:", visible);
-
-      console.log("account.address:", account?.address);
-      // console.log("listing owners:", all.map(l => l.asset?.owner));
-
-      setListings(visible);
-
-        setError(null);
-      } catch (err: any) {
-        setError(err);
-        console.error("❌ Failed to fetch listings:", err);
-      } finally {
-        setLoading(false);
-      }
+    async function loadAll() {
+      setLoading(true);
+      const all = await fetchListingsWithOwners(MARKETPLACE_ADDRESS);
+      setAllListings(all);
+      setLoading(false);
     }
 
-    fetchListings();
-  }, [account?.address]);
+    loadAll();
+  }, []);
+
+  // Filter listings based on connected account
+  
+    // if (!account?.address) return listings;
+
+    // const user = account.address.toLowerCase();
+    // return listings.filter((l) => {
+    //   const owner = l.asset?.owner?.toLowerCase();
+    //   return owner !== user;
+    
+    // });
+    //   // Apply filtered listings to state
+//  useEffect(() => {
+//   if (!isEqual(listings, filteredListings)) {
+//     setListings(filteredListings);
+//   }
+// }, [filteredListings]);
+const visibleListings = useMemo(() => {
+
+ if (!account?.address) return allListings;
+const user = account?.address?.toLowerCase();
+  return allListings.filter(
+    (l) => l.asset.owner?.toLowerCase() !== user
+  );
+  }, [account?.address, allListings]);
+
+
+
+useEffect(() => {
+  if (!account?.address) {
+    setAllListings([...allListings]); // Force reactivity
+  }
+}, [account?.address]);
+
 
   return (
     <main className="p-6 text-white bg-black min-h-screen">
@@ -155,11 +145,12 @@ const handleBuyNow = async (listing: any) => {
 
       {loading && <p>Loading listings...</p>}
       {error && <p className="text-red-500">Error: {error.message}</p>}
-      {!loading && listings.length === 0 && <p>No listings found.</p>}
+      {!loading && visibleListings.length === 0 && <p>No listings found.</p>}
       
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {listings.map((listing) => (
+        {visibleListings.map((listing) => (
+
        <div
         key={listing.id}
         className="flex flex-col rounded-xl border border-gray-700 bg-zinc-900 p-3 shadow-md"

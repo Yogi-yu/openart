@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,8 +14,12 @@ export async function GET(req: NextRequest) {
   }
 
   const history = await prisma.purchaseHistory.findMany({
-    where: { userAddress: address.toLowerCase() },
-    orderBy: { timestamp: "desc" },
+    where: {
+      userAddress: address.toLowerCase(),
+    },
+    orderBy: {
+      timestamp: "desc",
+    },
   });
 
   return NextResponse.json(history);

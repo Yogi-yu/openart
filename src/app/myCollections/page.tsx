@@ -20,6 +20,33 @@ export default function MyCollectionsPage() {
   const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
   const [listings, setListings] = useState<any[]>([]);
 
+
+  async function simulateTransaction() {
+  const mockListing = nfts.find((nft) => nft.listing);
+  if (!mockListing || !account?.address) return;
+
+  const listing = mockListing.listing;
+
+  const res = await fetch("/api/record-purchase", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userAddress: account.address,
+      tokenId: BigInt(listing.tokenId).toString(),
+      nftContract: listing.assetContractAddress,
+      price: listing.currencyValuePerToken.displayValue,
+      currency: listing.currencyValuePerToken.symbol,
+      timestamp: new Date().toISOString(),
+      listingId: listing.id.toString(),
+    }),
+  });
+
+  const result = await res.json();
+  console.log("✅ Mock purchase recorded:", result);
+  alert("Mock purchase successfully recorded to DB");
+}
+
+
   useEffect(() => {
     async function fetchData() {
       if (!account?.address) return;
@@ -55,6 +82,8 @@ export default function MyCollectionsPage() {
           
         setNfts(enriched);
 
+        console.log("Enriched NFTs:", enriched);
+
         const res = await fetch(`/api/user-history?address=${account.address}`);
 
         if (!res.ok) {
@@ -64,6 +93,7 @@ export default function MyCollectionsPage() {
 
         const history = await res.json();
         setPurchaseHistory(history);
+        console.log("history:", history);
 
     
       } catch (err) {
@@ -132,7 +162,17 @@ export default function MyCollectionsPage() {
                   })}
                 </p>
               )}
+            <button
+              onClick={simulateTransaction}
+              className="mb-4 px-4 py-2 bg-yellow-500 text-black rounded"
+            >
+              ⚙️ Simulate Purchase Record
+            </button>
+
+
             </div>
+
+            
           );
         })}
       </div>
