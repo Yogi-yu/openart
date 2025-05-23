@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model PurchaseHistory {
+  id            String   @id @default(cuid())
+  userAddress   String
+  tokenId       String
+  nftContract   String
+  price         String
+  currency      String
+  timestamp     DateTime
+  listingId     String
+
+  @@index([userAddress])
+}
